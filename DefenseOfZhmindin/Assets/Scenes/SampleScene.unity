@@ -313,7 +313,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 5
+  m_text: 15
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1204,7 +1204,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0
+  m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1435,13 +1435,15 @@ MonoBehaviour:
   BuyPeasant: {fileID: 1492045048}
   BuyKnight: {fileID: 804254207}
   WheatMesh: {fileID: 1215793215}
-  StartWheat: 0
+  StartWheat: 25
   PeasantNum: {fileID: 1874550064}
-  PeasantCost: 0
+  StartPeasant: 5
+  PeasantCost: 5
   KnightNum: {fileID: 1139919621}
-  KnightCost: 0
+  StartKnight: 1
+  KnightCost: 15
   TimerCount: {fileID: 1980143044}
-  TimerStart: 5
+  TimerStart: 15
 --- !u!1 &1219527941
 GameObject:
   m_ObjectHideFlags: 0
@@ -2277,7 +2279,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0
+  m_text: 5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

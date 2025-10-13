@@ -8,14 +8,16 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private Button BuyPeasant;
     [SerializeField] private Button BuyKnight;
     [SerializeField] private TextMeshProUGUI WheatMesh;
-    [SerializeField, TextArea(3, 10)] private int StartWheat;
+    [SerializeField] private int StartWheat;
     [SerializeField] private TextMeshProUGUI PeasantNum;
-    [SerializeField, TextArea(3, 10)] private int PeasantCost;
+    [SerializeField] private int StartPeasant;
+    [SerializeField] private int PeasantCost;
     [SerializeField] private TextMeshProUGUI KnightNum;
-    [SerializeField, TextArea(3, 10)] private int KnightCost;
+    [SerializeField] private int StartKnight;
+    [SerializeField] private int KnightCost;
     [SerializeField] private TextMeshProUGUI TimerCount;
-    [SerializeField, TextArea(3, 10)] private float TimerStart;
-    
+    [SerializeField] private float TimerStart;
+
     private void Awake()
     {
         UpdateUI();
@@ -25,19 +27,20 @@ public class QuntityOfWheat : MonoBehaviour
 
     private void Update()
     {
-        while (true)
-        { 
-            float CurentTime = TimerStart - Time.time;
-            TimerCount.text = Mathf.Round(CurentTime).ToString();
-            if (CurentTime <= 0)
-            {
-                TimerStart = 15;
-            }
+        int WheatNum = StartWheat;
+        float CurentTime = TimerStart - Time.time;
+        TimerCount.text = Mathf.Round(CurentTime).ToString();
+        if (CurentTime <= 0)
+        {
+            WheatNum = StartPeasant * 2;
+            CurentTime = 15;
+            TimerStart = 15;
         }
+        WheatMesh.text = WheatNum.ToString();
+     
     }
     private void Peasant()
     {
-        UpdateUI();
         
     }
 
