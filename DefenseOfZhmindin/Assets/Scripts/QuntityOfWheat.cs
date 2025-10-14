@@ -32,12 +32,12 @@ public class QuntityOfWheat : MonoBehaviour
         TimerCount.text = Mathf.Round(CurentTime).ToString();
         if (CurentTime <= 0)
         {
-            WheatNum = StartPeasant * 2;
+            WheatNum = WheatNum + StartPeasant * 2;
             CurentTime = 15;
             TimerStart = 15;
         }
         WheatMesh.text = WheatNum.ToString();
-     
+
     }
     private void Peasant()
     {
