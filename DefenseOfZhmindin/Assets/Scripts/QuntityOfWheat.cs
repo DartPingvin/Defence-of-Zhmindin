@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class QuntityOfWheat : MonoBehaviour
 {
+    //Base
     [SerializeField] private Button BuyPeasant;
     [SerializeField] private Button BuyKnight;
     [SerializeField] private Button StartNewWave;
@@ -17,6 +18,7 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private TextMeshProUGUI KnightNum;
     [SerializeField] private int StartKnight;
     [SerializeField] private int KnightCost;
+    //Economy
     [SerializeField] private TextMeshProUGUI HarvestCount;
     [SerializeField] private float TimerStartHarvest;
     [SerializeField] private TextMeshProUGUI ConsumptionCount;
@@ -24,17 +26,20 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private TextMeshProUGUI ConsumptionText;
     [SerializeField] private TextMeshProUGUI ProductionText;
     [SerializeField] private TextMeshProUGUI PopulationText;
+    //Waves
     [SerializeField] private TextMeshProUGUI TimeBeforeWave;
+    [SerializeField] private float WavePrepareTime;
     [SerializeField] private int WaveCount;
     [SerializeField] private TextMeshProUGUI WaveNum;
     [SerializeField] private int RewardNum;
     [SerializeField] private TextMeshProUGUI Reward;
+    [SerializeField] private int EnemiesNum;
     [SerializeField] private TextMeshProUGUI WaveEnemies;
-    [SerializeField] private int Enemies;
+    [SerializeField] private bool IsWaveActive;
     
 
 
-    void Awake()
+    private void Awake() //Buttons
     {
         UpdateUI();
         BuyPeasant.onClick.AddListener(Peasant);
@@ -42,7 +47,7 @@ public class QuntityOfWheat : MonoBehaviour
         StartNewWave.onClick.AddListener(Wave);
     }
 
-    void Update() //Prodaction-ConsumptionTimers
+    private void Update() //Prodaction-ConsumptionTimers
     {
         int WheatNum = StartWheat;
         float HarvestTime = TimerStartHarvest - Time.time;
@@ -79,7 +84,11 @@ public class QuntityOfWheat : MonoBehaviour
         }
         WheatMesh.text = WheatNum.ToString();
         UpdateUI();
-
+        //WaveUpdate
+        if (IsWaveActive == true)
+        {
+            UpdateWaveTimer();
+        }
     }
     private void Peasant()
     {
@@ -125,11 +134,43 @@ public class QuntityOfWheat : MonoBehaviour
         ProductionText.text = Production.ToString();
         int Population = (StartPeasant + StartKnight);
         PopulationText.text = Population.ToString();
+        WaveNum.text = WaveCount.ToString();
+
         
 
     }
     private void Wave()
     {
+        int EnemiesNum = StartPeasant / 4 + WaveCount;
+        WaveEnemies.text = EnemiesNum.ToString();
+        RewardNum = EnemiesNum * 15 + WaveCount * 2;
+        Reward.text = RewardNum.ToString();
+        WavePrepareTime = WavePrepareTime + WaveCount * 2;
         
+
+    }
+    private void UpdateWaveTimer()
+    {
+        
+        int WheatNum = StartWheat;
+        float WavePreapare = WavePrepareTime - Time.time;
+        TimeBeforeWave.text = Mathf.Round(WavePreapare).ToString();
+        WavePrepareTime = WavePreapare;
+        if (WavePreapare <= 0)
+        {
+            if (StartKnight >= EnemiesNum)
+            {
+                StartWheat = WheatNum + RewardNum;
+                WaveCount = WaveCount++;
+                IsWaveActive = false;
+            }
+            else
+            {
+                StartWheat = StartWheat - RewardNum;
+                IsWaveActive = false;
+            }
+        }
+        UpdateUI();
+
     }
 }
