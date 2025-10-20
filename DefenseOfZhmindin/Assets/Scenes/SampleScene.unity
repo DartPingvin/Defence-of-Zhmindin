@@ -2625,7 +2625,7 @@ MonoBehaviour:
   PopulationText: {fileID: 2111300370}
   TimeBeforeWave: {fileID: 1288570176}
   WavePrepareTime: 60
-  WaveCount: 1
+  WaveCount: 0
   WaveNum: {fileID: 411661062}
   RewardNum: 1
   Reward: {fileID: 2126747946}

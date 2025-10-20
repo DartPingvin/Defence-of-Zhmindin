@@ -134,43 +134,47 @@ public class QuntityOfWheat : MonoBehaviour
         ProductionText.text = Production.ToString();
         int Population = (StartPeasant + StartKnight);
         PopulationText.text = Population.ToString();
-        WaveNum.text = WaveCount.ToString();
-
-        
-
     }
     private void Wave()
     {
-        int EnemiesNum = StartPeasant / 4 + WaveCount;
-        WaveEnemies.text = EnemiesNum.ToString();
-        RewardNum = EnemiesNum * 15 + WaveCount * 2;
-        Reward.text = RewardNum.ToString();
-        WavePrepareTime = WavePrepareTime + WaveCount * 2;
-        
-
+        if (IsWaveActive == false)
+        {
+            EnemiesNum = StartPeasant / 4 + WaveCount * 2 + WaveCount / 2;
+            WaveEnemies.text = EnemiesNum.ToString();
+            RewardNum = EnemiesNum * 30 + WaveCount * 2 + WaveCount / 2;
+            Reward.text = RewardNum.ToString();
+            WavePrepareTime = 60 + WaveCount + Time.time;
+            IsWaveActive = true;
+        }
     }
     private void UpdateWaveTimer()
     {
-        
-        int WheatNum = StartWheat;
         float WavePreapare = WavePrepareTime - Time.time;
         TimeBeforeWave.text = Mathf.Round(WavePreapare).ToString();
-        WavePrepareTime = WavePreapare;
         if (WavePreapare <= 0)
         {
             if (StartKnight >= EnemiesNum)
             {
-                StartWheat = WheatNum + RewardNum;
-                WaveCount = WaveCount++;
+                StartWheat = StartWheat + RewardNum;
+                WaveCount = WaveCount + 1;
+                WaveNum.text = WaveCount.ToString();
                 IsWaveActive = false;
+                UpdateUI();
             }
             else
             {
-                StartWheat = StartWheat - RewardNum;
+                StartWheat = StartWheat - (RewardNum - StartKnight / 15);
+                WheatMesh.text = StartWheat.ToString();
+                StartKnight = StartKnight - StartWheat/15;
+                if (StartKnight < 0)
+                {
+                    StartKnight = 0;
+                }
+                KnightNum.text = StartKnight.ToString();
                 IsWaveActive = false;
+                UpdateUI();
             }
         }
         UpdateUI();
-
     }
 }
