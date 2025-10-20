@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 using TMPro;
+using UnityEditor.Rendering.Universal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,9 +10,10 @@ using UnityEngine.UI;
 public class QuntityOfWheat : MonoBehaviour
 {
     //Base
-    
+    public GameObject PauseMenu;
+    public GameObject MessegePrefab;
+    public Transform MessegeParent;
     [SerializeField] private TextMeshProUGUI EventText1;
-    [SerializeField] private TextMeshProUGUI EventText2;
     private string EventText;
     private float HarvestTime;
     private float ConsumptionTime;
@@ -53,14 +55,18 @@ public class QuntityOfWheat : MonoBehaviour
     //Victory
     [SerializeField] private bool IsHundredWavesWin;
 
-    private void EventDisplay()
+    public void EventDisplay()
     {
-    
+        EventText1.text = EventText;
+        Instantiate(MessegePrefab, MessegeParent);
     }
 
     private void Awake() //Buttons
     {
         UpdateUI();
+        EventDisplay();
+        EventText = ("Welcome To Zhmindin!");
+        EventDisplay();
         BuyPeasant.onClick.AddListener(Peasant);
         BuyKnight.onClick.AddListener(Knight);
         StartNewWave.onClick.AddListener(Wave);
@@ -70,62 +76,67 @@ public class QuntityOfWheat : MonoBehaviour
         IsHundredWavesWin = false;
         
     }
-
-    private void Update() //Prodaction-ConsumptionTimers
+    private void Update() //Prodaction-ConsumptionTimers, Victory-Defeat Cheaks and WaveUpdate.
     {
-        int WheatNum = StartWheat;
-        HarvestTime -= Time.deltaTime;
-        HarvestCount.text = Mathf.Round(HarvestTime).ToString();
-        if (HarvestTime <= 0)
+        if (PauseMenu.activeInHierarchy != true)
         {
-            WheatNum = WheatNum + StartPeasant * 2;
-            StartWheat = WheatNum;
-            HarvestTime = TimerStartHarvest;
-            EventText = ($"Peasant,s Have Collected {Production} Wheat");
-        }
-        ConsumptionTime -= Time.deltaTime;
-        ConsumptionCount.text = Mathf.Round(ConsumptionTime).ToString();
-        if (ConsumptionTime <= 0)
-        {
-            WheatNum = WheatNum - (StartPeasant + StartKnight*3);
-            EventText = ($"Citisens Have Consumed {Consumption} Wheat");
-
-            if (WheatNum < 0)
+            int WheatNum = StartWheat;
+            HarvestTime -= Time.deltaTime;
+            HarvestCount.text = Mathf.Round(HarvestTime).ToString();
+            if (HarvestTime <= 0)
             {
-                StartKnight = StartKnight + Math.DivRem(WheatNum, 3, out int result);
-                StartPeasant = StartPeasant + result;
-                EventText = ($"Citisens Have Died Because Of Hunger");
-                if (StartKnight < 0)
-                {
-                    StartPeasant = StartPeasant + StartKnight * 3;
-                    WheatNum = 0;
-                    StartKnight = 0;
-                }
-                else
-                {
-                    WheatNum = 0;
-                }
+                WheatNum = WheatNum + StartPeasant * 3;
+                StartWheat = WheatNum;
+                HarvestTime = TimerStartHarvest;
+                EventText = ($"Peasant,s Had Collected {Production} Wheat");
+                EventDisplay();
             }
-            StartWheat = WheatNum;
-            ConsumptionTime = TimerStartConsumption;
-        }
-        WheatMesh.text = WheatNum.ToString();
-        UpdateUI();
-        //WaveUpdate
-        if (IsWaveActive == true)
-        {
-            UpdateWaveTimer();
-        }
+            ConsumptionTime -= Time.deltaTime;
+            ConsumptionCount.text = Mathf.Round(ConsumptionTime).ToString();
+            if (ConsumptionTime <= 0)
+            {
+                WheatNum = WheatNum - (StartPeasant + StartKnight * 3);
+                EventText = ($"Citisens Had Consumed {Consumption} Wheat");
+                EventDisplay();
+
+                if (WheatNum < 0)
+                {
+                    StartKnight = StartKnight + Math.DivRem(WheatNum, 3, out int result);
+                    StartPeasant = StartPeasant + result;
+                    EventText = ($"Citisens Had Died Because Of Hunger");
+                    EventDisplay();
+                    if (StartKnight < 0)
+                    {
+                        StartPeasant = StartPeasant + StartKnight * 3;
+                        WheatNum = 0;
+                        StartKnight = 0;
+                    }
+                    else
+                    {
+                        WheatNum = 0;
+                    }
+                }
+                StartWheat = WheatNum;
+                ConsumptionTime = TimerStartConsumption;
+            }
+            WheatMesh.text = WheatNum.ToString();
+            UpdateUI();
+            //WaveUpdate
+            if (IsWaveActive == true)
+            {
+                UpdateWaveTimer();
+            }
         ;
-        //Defeat
-        if (IsPopZ == true)
-        {
-            Defeat();
-        }
-        //Victory
-        if (IsHundredWavesWin == true)
-        {
-            Victory();
+            //Defeat
+            if (IsPopZ == true)
+            {
+                Defeat();
+            }
+            //Victory
+            if (IsHundredWavesWin == true)
+            {
+                Victory();
+            }
         }
     }
     private void Peasant()
@@ -142,6 +153,7 @@ public class QuntityOfWheat : MonoBehaviour
             WheatMesh.text = StartWheat.ToString();
             PeasantNum.text = StartPeasant.ToString();
             EventText = ("New Peasant Appeard In Zhmindin");
+            EventDisplay();
             UpdateUI();
         }
         
@@ -160,19 +172,19 @@ public class QuntityOfWheat : MonoBehaviour
             WheatMesh.text = StartWheat.ToString();
             KnightNum.text = StartKnight.ToString();
             EventText = ("New Knight Appeard In Zhmindin");
+            EventDisplay();
             UpdateUI();
         }
 
     }
     void UpdateUI()
     {
-        EventDisplay();
         WheatMesh.text = StartWheat.ToString();
         PeasantNum.text = StartPeasant.ToString();
         KnightNum.text = StartKnight.ToString();
         Consumption = (StartPeasant + StartKnight * 3);
         ConsumptionText.text = Consumption.ToString();
-        Production = (StartPeasant * 2);
+        Production = (StartPeasant * 3);
         ProductionText.text = Production.ToString();
         Population = (StartPeasant + StartKnight);
         PopulationText.text = Population.ToString();
@@ -185,51 +197,54 @@ public class QuntityOfWheat : MonoBehaviour
     {
         if (IsWaveActive == false)
         {
-            EnemiesNum = StartPeasant / 4 + WaveCount * 2 + WaveCount / 2;
+            EnemiesNum = StartPeasant / 3 + WaveCount * 2 + WaveCount / 2;
             WaveEnemies.text = EnemiesNum.ToString();
             RewardNum = EnemiesNum * 30 + WaveCount * 2 + WaveCount / 2;
             Reward.text = RewardNum.ToString();
             WavePrepareTime = WavePrepareTime + WaveCount;
             WavePreapare = WavePrepareTime;
             EventText = ("New Wave Is Comming");
+            EventDisplay();
             IsWaveActive = true;
             UpdateUI();
         }
     }
     private void UpdateWaveTimer()
     {
-        WavePreapare -= Time.deltaTime;
-        TimeBeforeWave.text = Mathf.Round(WavePreapare).ToString();
-        if (WavePreapare <= 0)
+        if (IsWaveActive == true)
         {
-            if (StartKnight >= EnemiesNum)
+            WavePreapare -= Time.deltaTime;
+            TimeBeforeWave.text = Mathf.Round(WavePreapare).ToString();
+            if (WavePreapare <= 0)
             {
-                StartWheat = StartWheat + RewardNum;
-                EventText = ($"You Have Won {WaveCount} Wave");
-                WaveCount = WaveCount + 1;
-                WaveNum.text = WaveCount.ToString();
-                IsWaveActive = false;
-                UpdateUI();
-            }
-            else
-            {
-                StartWheat = StartWheat - (RewardNum - StartKnight / 15);
-                WheatMesh.text = StartWheat.ToString();
-                StartKnight = StartKnight - RewardNum/15;
-                if (StartKnight < 0)
+                if (StartKnight >= EnemiesNum)
                 {
-                    StartKnight = 0;
+                    StartWheat = StartWheat + RewardNum;
+                    EventText = ($"You Had Won {WaveCount} Wave");
+                    EventDisplay();
+                    WaveCount = WaveCount + 1;
+                    WaveNum.text = WaveCount.ToString();
+                    IsWaveActive = false;
                 }
-                KnightNum.text = StartKnight.ToString();
-                IsWaveActive = false;
-                EventText = ($"You Have Losted {WaveCount} Wave");
-                UpdateUI();
+                else
+                {
+                    StartWheat = StartWheat - (RewardNum - StartKnight / 15);
+                    WheatMesh.text = StartWheat.ToString();
+                    StartKnight = StartKnight - RewardNum / 15;
+                    if (StartKnight < 0)
+                    {
+                        StartKnight = 0;
+                    }
+                    KnightNum.text = StartKnight.ToString();
+                    IsWaveActive = false;
+                    EventText = ($"You Had Losted {WaveCount} Wave");
+                    EventDisplay();
+                }
+                WavePreapare = WavePrepareTime;
             }
-            WavePreapare = WavePrepareTime;
+            UpdateUI();
         }
-        UpdateUI();
     }
-
     private void Defeat()
     {
         SceneManager.LoadScene(2);
@@ -238,5 +253,6 @@ public class QuntityOfWheat : MonoBehaviour
     private void Victory()
     {
         EventText = ("Victory");
+        EventDisplay();
     }
 }
