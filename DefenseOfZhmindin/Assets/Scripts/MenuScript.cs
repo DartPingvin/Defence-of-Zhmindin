@@ -5,7 +5,10 @@ using UnityEngine.UIElements;
 public class MenuScript : MonoBehaviour
 {
     public GameObject PauseMenu;
+    public GameObject TradeMenu;
+    private bool TradeMenuUp = false;
 
+    //Pause Menu
     public void ToPausePress()
     {
         PauseMenu.SetActive(true);
@@ -21,5 +24,19 @@ public class MenuScript : MonoBehaviour
     public void ToReturnPress()
     {
         PauseMenu.SetActive(false);
+    }
+    //Trade Menu
+    public void TradeMenuPress()
+    {
+        if (TradeMenuUp == false)
+        {
+            TradeMenuUp = true;
+            TradeMenu.SetActive(true);
+        }
+        else
+        {
+            TradeMenuUp = false;
+            TradeMenu.SetActive(false);
+        }
     }
 }

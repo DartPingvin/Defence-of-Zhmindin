@@ -39,6 +39,17 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private TextMeshProUGUI ConsumptionText;
     [SerializeField] private TextMeshProUGUI ProductionText;
     [SerializeField] private TextMeshProUGUI PopulationText;
+    [SerializeField] public int StartGold;
+    //Upgrades
+    [SerializeField] private TextMeshProUGUI PeasantsUpgrade;
+    [SerializeField] private TextMeshProUGUI KnightsUpgrade;
+    [SerializeField] private Button BuyPeasantUpgrade;
+    [SerializeField] private Button BuyKnightUpgrade;
+    [SerializeField] private int PeasantUpCost;
+    [SerializeField] private int KnightUpCost;
+    [SerializeField] private int PeasantLvl;
+    [SerializeField] private int KnightLvl;
+    [SerializeField] private bool AfterWave10;
     //Waves
     float WavePreapare;
     [SerializeField] private TextMeshProUGUI TimeBeforeWave;
@@ -74,7 +85,9 @@ public class QuntityOfWheat : MonoBehaviour
         ConsumptionTime = TimerStartConsumption;
         IsPopZ = false;
         IsHundredWavesWin = false;
-        
+        BuyPeasantUpgrade.onClick.AddListener(PeasantUpgrade);
+        BuyKnightUpgrade.onClick.AddListener(KnightUpgrade);
+
     }
     private void Update() //Prodaction-ConsumptionTimers, Victory-Defeat Cheaks and WaveUpdate.
     {
@@ -85,7 +98,7 @@ public class QuntityOfWheat : MonoBehaviour
             HarvestCount.text = Mathf.Round(HarvestTime).ToString();
             if (HarvestTime <= 0)
             {
-                WheatNum = WheatNum + StartPeasant * 3;
+                WheatNum = WheatNum + StartPeasant * (1 + 1*PeasantLvl);
                 StartWheat = WheatNum;
                 HarvestTime = TimerStartHarvest;
                 EventText = ($"Peasant,s Had Collected {Production} Wheat");
@@ -177,6 +190,27 @@ public class QuntityOfWheat : MonoBehaviour
         }
 
     }
+
+    private void PeasantUpgrade()
+    {
+        if (AfterWave10 == true && PeasantUpCost < StartGold)
+        {
+            StartGold = StartGold - PeasantUpCost;
+            PeasantLvl++;
+            UpdateUI();
+        }
+    }
+
+    private void KnightUpgrade()
+    {
+        if (AfterWave10 == true && KnightUpCost < StartGold)
+        {
+            StartGold = StartGold - KnightUpCost;
+            KnightLvl++;
+            UpdateUI();
+        }
+    }
+
     void UpdateUI()
     {
         WheatMesh.text = StartWheat.ToString();
@@ -184,10 +218,12 @@ public class QuntityOfWheat : MonoBehaviour
         KnightNum.text = StartKnight.ToString();
         Consumption = (StartPeasant + StartKnight * 3);
         ConsumptionText.text = Consumption.ToString();
-        Production = (StartPeasant * 3);
+        Production = (StartPeasant * (1 + 1*PeasantLvl));
         ProductionText.text = Production.ToString();
         Population = (StartPeasant + StartKnight);
         PopulationText.text = Population.ToString();
+        PeasantsUpgrade.text = PeasantLvl.ToString();
+        KnightsUpgrade.text = KnightLvl.ToString();
         if (Population <= 0)
         {
             IsPopZ = true;
@@ -197,7 +233,7 @@ public class QuntityOfWheat : MonoBehaviour
     {
         if (IsWaveActive == false)
         {
-            EnemiesNum = StartPeasant / 3 + WaveCount * 2 + WaveCount / 2;
+            EnemiesNum = StartPeasant / 3 + 2*PeasantLvl + WaveCount * 2 + WaveCount / 2 -  2*(1 * KnightLvl);
             WaveEnemies.text = EnemiesNum.ToString();
             RewardNum = EnemiesNum * 30 + WaveCount * 2 + WaveCount / 2;
             Reward.text = RewardNum.ToString();
@@ -217,12 +253,16 @@ public class QuntityOfWheat : MonoBehaviour
             TimeBeforeWave.text = Mathf.Round(WavePreapare).ToString();
             if (WavePreapare <= 0)
             {
-                if (StartKnight >= EnemiesNum)
+                if (StartKnight + 1*KnightLvl >= EnemiesNum)
                 {
                     StartWheat = StartWheat + RewardNum;
                     EventText = ($"You Had Won {WaveCount} Wave");
                     EventDisplay();
                     WaveCount = WaveCount + 1;
+                    if (WaveCount == 10)
+                    {
+                        AfterWave10 = true;
+                    }
                     WaveNum.text = WaveCount.ToString();
                     IsWaveActive = false;
                 }

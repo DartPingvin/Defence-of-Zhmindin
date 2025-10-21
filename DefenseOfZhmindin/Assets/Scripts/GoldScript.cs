@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class GoldScript : MonoBehaviour
 {
-    [SerializeField] int StartGold;
+    [SerializeField] public int StartGold;
     [SerializeField] private TextMeshProUGUI GoldText;
     [SerializeField] int StartMiners;
     [SerializeField] private TextMeshProUGUI MinersText;
