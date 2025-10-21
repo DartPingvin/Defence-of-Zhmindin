@@ -31,6 +31,8 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private TextMeshProUGUI KnightNum;
     [SerializeField] private int StartKnight;
     [SerializeField] private int KnightCost;
+    [SerializeField] private TextMeshProUGUI CostPeasant;
+    [SerializeField] private TextMeshProUGUI CostKnight;
     //Economy
     [SerializeField] private TextMeshProUGUI HarvestCount;
     [SerializeField] private float TimerStartHarvest;
@@ -39,7 +41,16 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private TextMeshProUGUI ConsumptionText;
     [SerializeField] private TextMeshProUGUI ProductionText;
     [SerializeField] private TextMeshProUGUI PopulationText;
+    //Gold
     [SerializeField] public int StartGold;
+    [SerializeField] private TextMeshProUGUI GoldText;
+    [SerializeField] int StartMiners;
+    [SerializeField] private TextMeshProUGUI MinersText;
+    [SerializeField] private Button BuyMiner;
+    [SerializeField] private int MinerCost = 30;
+    [SerializeField] private Button SellWheat;
+    [SerializeField] private Button SellGold;
+    [SerializeField] int GoldPrice = 100;
     //Upgrades
     [SerializeField] private TextMeshProUGUI PeasantsUpgrade;
     [SerializeField] private TextMeshProUGUI KnightsUpgrade;
@@ -61,6 +72,7 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private int EnemiesNum;
     [SerializeField] private TextMeshProUGUI WaveEnemies;
     [SerializeField] private bool IsWaveActive;
+    [SerializeField] private TextMeshProUGUI DefenceText;
     //Defeat
     [SerializeField] private bool IsPopZ;
     //Victory
@@ -80,7 +92,10 @@ public class QuntityOfWheat : MonoBehaviour
         EventDisplay();
         BuyPeasant.onClick.AddListener(Peasant);
         BuyKnight.onClick.AddListener(Knight);
+        BuyMiner.onClick.AddListener(Miner);
         StartNewWave.onClick.AddListener(Wave);
+        SellWheat.onClick.AddListener(BuyGold);
+        SellGold.onClick.AddListener(BuyWheat);
         HarvestTime = TimerStartHarvest;
         ConsumptionTime = TimerStartConsumption;
         IsPopZ = false;
@@ -108,7 +123,7 @@ public class QuntityOfWheat : MonoBehaviour
             ConsumptionCount.text = Mathf.Round(ConsumptionTime).ToString();
             if (ConsumptionTime <= 0)
             {
-                WheatNum = WheatNum - (StartPeasant + StartKnight * 3);
+                WheatNum = WheatNum - (StartPeasant + StartKnight * 3 + StartMiners*5);
                 EventText = ($"Citisens Had Consumed {Consumption} Wheat");
                 EventDisplay();
 
@@ -190,13 +205,48 @@ public class QuntityOfWheat : MonoBehaviour
         }
 
     }
-
+    private void Miner()
+    {
+        if (StartGold >= MinerCost)
+        {
+            StartMiners = StartMiners + 1;
+            StartGold = StartGold - MinerCost;
+            EventText = ("New Miner Was Hiered");
+            EventDisplay();
+            UpdateUI();
+        }
+    }
+    private void BuyGold()
+    {
+        StartGold++;
+        StartWheat = StartWheat - GoldPrice;
+        EventText = ("You Had Buyed Gold");
+        EventDisplay();
+        UpdateUI();
+    }
+    private void BuyWheat()
+    {
+        if (StartGold > 0)
+        {
+            StartGold--;
+            StartWheat = StartWheat + GoldPrice;
+            EventText = ("You Had Buyed Wheat");
+            EventDisplay();
+            UpdateUI();
+        }
+        else
+        {
+            EventText = ("You Don,t Have Enough Gold!");
+            EventDisplay();
+        }
+    }
     private void PeasantUpgrade()
     {
         if (AfterWave10 == true && PeasantUpCost < StartGold)
         {
             StartGold = StartGold - PeasantUpCost;
             PeasantLvl++;
+            PeasantCost++;
             UpdateUI();
         }
     }
@@ -207,6 +257,7 @@ public class QuntityOfWheat : MonoBehaviour
         {
             StartGold = StartGold - KnightUpCost;
             KnightLvl++;
+            KnightCost++;
             UpdateUI();
         }
     }
@@ -214,8 +265,12 @@ public class QuntityOfWheat : MonoBehaviour
     void UpdateUI()
     {
         WheatMesh.text = StartWheat.ToString();
+        GoldText.text = StartGold.ToString();
         PeasantNum.text = StartPeasant.ToString();
         KnightNum.text = StartKnight.ToString();
+        MinersText.text = StartMiners.ToString();
+        CostPeasant.text = PeasantCost.ToString();
+        CostKnight.text = KnightCost.ToString();
         Consumption = (StartPeasant + StartKnight * 3);
         ConsumptionText.text = Consumption.ToString();
         Production = (StartPeasant * (1 + 1*PeasantLvl));
@@ -224,6 +279,7 @@ public class QuntityOfWheat : MonoBehaviour
         PopulationText.text = Population.ToString();
         PeasantsUpgrade.text = PeasantLvl.ToString();
         KnightsUpgrade.text = KnightLvl.ToString();
+        DefenceText.text = (StartKnight * KnightLvl).ToString();
         if (Population <= 0)
         {
             IsPopZ = true;
@@ -233,9 +289,13 @@ public class QuntityOfWheat : MonoBehaviour
     {
         if (IsWaveActive == false)
         {
-            EnemiesNum = StartPeasant / 3 + 2*PeasantLvl + WaveCount * 2 + WaveCount / 2 -  2*(1 * KnightLvl);
+            EnemiesNum = StartPeasant / 3 * 2*PeasantLvl + WaveCount * 2 + WaveCount / 2;
+            if (EnemiesNum < 0)
+            {
+                EnemiesNum = EnemiesNum * EnemiesNum;
+            }
             WaveEnemies.text = EnemiesNum.ToString();
-            RewardNum = EnemiesNum * 30 + WaveCount * 2 + WaveCount / 2;
+            RewardNum = EnemiesNum * (PeasantCost+KnightCost) + WaveCount * 2 + WaveCount / 2;
             Reward.text = RewardNum.ToString();
             WavePrepareTime = WavePrepareTime + WaveCount;
             WavePreapare = WavePrepareTime;
@@ -253,7 +313,7 @@ public class QuntityOfWheat : MonoBehaviour
             TimeBeforeWave.text = Mathf.Round(WavePreapare).ToString();
             if (WavePreapare <= 0)
             {
-                if (StartKnight + 1*KnightLvl >= EnemiesNum)
+                if (StartKnight*KnightLvl >= EnemiesNum)
                 {
                     StartWheat = StartWheat + RewardNum;
                     EventText = ($"You Had Won {WaveCount} Wave");
