@@ -47,7 +47,7 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] int StartMiners;
     [SerializeField] private TextMeshProUGUI MinersText;
     [SerializeField] private Button BuyMiner;
-    [SerializeField] private int MinerCost = 30;
+    [SerializeField] private int MinerCost = 15;
     [SerializeField] private Button SellWheat;
     [SerializeField] private Button SellGold;
     [SerializeField] int GoldPrice = 100;
@@ -113,7 +113,7 @@ public class QuntityOfWheat : MonoBehaviour
             HarvestCount.text = Mathf.Round(HarvestTime).ToString();
             if (HarvestTime <= 0)
             {
-                WheatNum = WheatNum + StartPeasant * (1 + 1*PeasantLvl);
+                WheatNum = WheatNum + StartPeasant * (1 + 1 * PeasantLvl);
                 StartWheat = WheatNum;
                 HarvestTime = TimerStartHarvest;
                 EventText = ($"Peasant,s Had Collected {Production} Wheat");
@@ -138,6 +138,10 @@ public class QuntityOfWheat : MonoBehaviour
                         StartPeasant = StartPeasant + StartKnight * 3;
                         WheatNum = 0;
                         StartKnight = 0;
+                        if (StartPeasant == 0)
+                        {
+                            StartMiners = 0;
+                        }
                     }
                     else
                     {
@@ -289,10 +293,10 @@ public class QuntityOfWheat : MonoBehaviour
     {
         if (IsWaveActive == false)
         {
-            EnemiesNum = StartPeasant / 3 * 2*PeasantLvl + WaveCount * 2 + WaveCount / 2;
-            if (EnemiesNum < 0)
+            EnemiesNum = StartPeasant / 3 * (1 + 2*PeasantLvl) + WaveCount * 2 + WaveCount / 2;
+            if (WaveCount < 5)
             {
-                EnemiesNum = EnemiesNum * EnemiesNum;
+                EnemiesNum = EnemiesNum - 2*WaveCount;
             }
             WaveEnemies.text = EnemiesNum.ToString();
             RewardNum = EnemiesNum * (PeasantCost+KnightCost) + WaveCount * 2 + WaveCount / 2;
@@ -322,6 +326,10 @@ public class QuntityOfWheat : MonoBehaviour
                     if (WaveCount == 10)
                     {
                         AfterWave10 = true;
+                    }
+                    if (StartMiners > 0)
+                    {
+                        StartGold = StartGold + StartMiners * 2;
                     }
                     WaveNum.text = WaveCount.ToString();
                     IsWaveActive = false;
