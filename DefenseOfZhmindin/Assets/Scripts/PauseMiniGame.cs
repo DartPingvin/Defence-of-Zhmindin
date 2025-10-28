@@ -11,20 +11,23 @@ public class PauseMiniGame : MonoBehaviour
 {
     [SerializeField] private List<Item> ItemData;
     [SerializeField] private TextMeshProUGUI Output;
-    [SerializeField] private TMP_InputField ING1;
+    [SerializeField] public TMP_InputField ING1;
     [SerializeField] private Button create;
     private string[] TestIngredients = new string[4];
-
-
-
     private void Awake()
     {
         create.onClick.AddListener(Create);
     }
     public void Create()
     {
-        string ING2 = ING1.ToString();
-        List<string> Ingredients = new List<string> (ING2.Split(' '));
+        string ING2 = ING1.text;
+        Debug.Log(ING1.text);
+        Debug.Log(ING2);
+        string[] Ingredients = ING2.Split(' ');
+        Debug.Log(Ingredients[0]);
+        Debug.Log(Ingredients[1]);
+        Debug.Log(Ingredients[2]);
+        Debug.Log(Ingredients[3]);
         TestIngredients[0] = Ingredients[0];
         TestIngredients[1] = Ingredients[1];
         TestIngredients[2] = Ingredients[2];
@@ -58,19 +61,8 @@ public class PauseMiniGame : MonoBehaviour
                                 ItemName = item.Name;
                                 return true;
                             }
-                            Debug.Log($"Searching for {ItemIngridients[3]} 4");
-                            Debug.Log($"Was Given {TestIngredients[3]} 4");
                         }
-                        Debug.Log($"Searching for {ItemIngridients[2]} 3");
-                        Debug.Log($"Was Given {TestIngredients[2]} 3");
                     }
-                    Debug.Log($"Searching for {ItemIngridients[1]} 2");
-                    Debug.Log($"Was Given {TestIngredients[1]} 2");
-                }
-                else
-                {
-                    Debug.Log($"Searching for {ItemIngridients[0]} - {ItemIngridients[0].GetType()}");
-                    Debug.Log($"Was Given {TestIngredients[0]} - {TestIngredients[0].GetType()}");
                 }
             }
         }

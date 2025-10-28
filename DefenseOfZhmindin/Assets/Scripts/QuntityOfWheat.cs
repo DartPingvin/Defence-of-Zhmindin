@@ -246,7 +246,7 @@ public class QuntityOfWheat : MonoBehaviour
     }
     private void PeasantUpgrade()
     {
-        if (AfterWave10 == true && PeasantUpCost < StartGold)
+        if (AfterWave10 == true && PeasantUpCost <= StartGold)
         {
             StartGold = StartGold - PeasantUpCost;
             PeasantLvl++;
@@ -275,7 +275,7 @@ public class QuntityOfWheat : MonoBehaviour
         MinersText.text = StartMiners.ToString();
         CostPeasant.text = PeasantCost.ToString();
         CostKnight.text = KnightCost.ToString();
-        Consumption = (StartPeasant + StartKnight * 3);
+        Consumption = (StartPeasant + StartKnight * 3 + StartMiners*5);
         ConsumptionText.text = Consumption.ToString();
         Production = (StartPeasant * (1 + 1*PeasantLvl));
         ProductionText.text = Production.ToString();
@@ -293,10 +293,14 @@ public class QuntityOfWheat : MonoBehaviour
     {
         if (IsWaveActive == false)
         {
-            EnemiesNum = StartPeasant / 3 * (1 + 2*PeasantLvl) + WaveCount * 2 + WaveCount / 2;
+            EnemiesNum = StartPeasant / 4 * (2*PeasantLvl) + WaveCount * 2 + WaveCount / 2;
             if (WaveCount < 5)
             {
-                EnemiesNum = EnemiesNum - 2*WaveCount;
+                EnemiesNum = EnemiesNum - 2*(WaveCount+1);
+            }
+            if (EnemiesNum == 0)
+            {
+                EnemiesNum = 1;
             }
             WaveEnemies.text = EnemiesNum.ToString();
             RewardNum = EnemiesNum * (PeasantCost+KnightCost) + WaveCount * 2 + WaveCount / 2;
@@ -336,7 +340,7 @@ public class QuntityOfWheat : MonoBehaviour
                 }
                 else
                 {
-                    StartWheat = StartWheat - (RewardNum - StartKnight / 15);
+                    StartWheat = StartWheat - (RewardNum - StartKnight * 15);
                     WheatMesh.text = StartWheat.ToString();
                     StartKnight = StartKnight - RewardNum / 15;
                     if (StartKnight < 0)
