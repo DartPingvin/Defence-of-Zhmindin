@@ -50,16 +50,21 @@ public class QuntityOfWheat : MonoBehaviour
     [SerializeField] private int MinerCost = 15;
     [SerializeField] private Button SellWheat;
     [SerializeField] private Button SellGold;
+    [SerializeField] private Button SellMAXWheat;
+    [SerializeField] private Button SellMAXGold;
     [SerializeField] int GoldPrice = 100;
     //Upgrades
     [SerializeField] private TextMeshProUGUI PeasantsUpgrade;
     [SerializeField] private TextMeshProUGUI KnightsUpgrade;
     [SerializeField] private Button BuyPeasantUpgrade;
     [SerializeField] private Button BuyKnightUpgrade;
+    [SerializeField] private Button BuyMinerUpgrade;
     [SerializeField] private int PeasantUpCost;
     [SerializeField] private int KnightUpCost;
+    [SerializeField] private int MinerUpCost;
     [SerializeField] private int PeasantLvl;
     [SerializeField] private int KnightLvl;
+    [SerializeField] private int MinerLvl;
     [SerializeField] private bool AfterWave10;
     //Waves
     float WavePreapare;
@@ -96,12 +101,15 @@ public class QuntityOfWheat : MonoBehaviour
         StartNewWave.onClick.AddListener(Wave);
         SellWheat.onClick.AddListener(BuyGold);
         SellGold.onClick.AddListener(BuyWheat);
+        SellMAXWheat.onClick.AddListener(BuyMAXGold);
+        SellMAXGold.onClick.AddListener(BuyMAXWheat);
         HarvestTime = TimerStartHarvest;
         ConsumptionTime = TimerStartConsumption;
         IsPopZ = false;
         IsHundredWavesWin = false;
         BuyPeasantUpgrade.onClick.AddListener(PeasantUpgrade);
         BuyKnightUpgrade.onClick.AddListener(KnightUpgrade);
+        BuyMinerUpgrade.onClick.AddListener(MinerUpgrade);
 
     }
     private void Update() //Prodaction-ConsumptionTimers, Victory-Defeat Cheaks and WaveUpdate.
@@ -219,6 +227,11 @@ public class QuntityOfWheat : MonoBehaviour
             EventDisplay();
             UpdateUI();
         }
+        else
+        {
+            EventText = ("You Don,t have enough gold");
+            EventDisplay();
+        }
     }
     private void BuyGold()
     {
@@ -244,13 +257,46 @@ public class QuntityOfWheat : MonoBehaviour
             EventDisplay();
         }
     }
+
+    private void BuyMAXWheat()
+    {
+        if (StartGold > 0)
+        {
+            StartWheat += StartGold * GoldPrice;
+            StartGold = 0;
+            EventText = ("You had buyed wheat for all of gold");
+            EventDisplay();
+        }
+        else
+        {
+            EventText = ("You have no Gold to sell!");
+            EventDisplay();
+        }
+    }
+
+    private void BuyMAXGold()
+    {
+        if (StartWheat >= 100)
+        {
+            StartGold += StartWheat / GoldPrice;
+            StartWheat = StartWheat % GoldPrice;
+            EventText = ("You had buyed gold for all of wheat");
+            EventDisplay();
+        }
+        else
+        {
+            EventText = ("You have no Wheat to sell!");
+            EventDisplay();
+        }
+    }
+
     private void PeasantUpgrade()
     {
         if (AfterWave10 == true && PeasantUpCost <= StartGold)
         {
             StartGold = StartGold - PeasantUpCost;
             PeasantLvl++;
-            PeasantCost++;
+            PeasantCost = PeasantCost*2;
             UpdateUI();
         }
     }
@@ -261,7 +307,18 @@ public class QuntityOfWheat : MonoBehaviour
         {
             StartGold = StartGold - KnightUpCost;
             KnightLvl++;
-            KnightCost++;
+            KnightCost = KnightCost * 2;
+            UpdateUI();
+        }
+    }
+
+    private void MinerUpgrade()
+    {
+        if (AfterWave10 == true && MinerUpCost < StartGold)
+        {
+            StartGold = StartGold - MinerUpCost;
+            MinerLvl++;
+            MinerCost = MinerCost *2;
             UpdateUI();
         }
     }
@@ -279,7 +336,7 @@ public class QuntityOfWheat : MonoBehaviour
         ConsumptionText.text = Consumption.ToString();
         Production = (StartPeasant * (1 + 1*PeasantLvl));
         ProductionText.text = Production.ToString();
-        Population = (StartPeasant + StartKnight);
+        Population = (StartPeasant + StartKnight + StartMiners);
         PopulationText.text = Population.ToString();
         PeasantsUpgrade.text = PeasantLvl.ToString();
         KnightsUpgrade.text = KnightLvl.ToString();
@@ -293,14 +350,14 @@ public class QuntityOfWheat : MonoBehaviour
     {
         if (IsWaveActive == false)
         {
-            EnemiesNum = StartPeasant / 4 * (2*PeasantLvl) + WaveCount * 2 + WaveCount / 2;
-            if (WaveCount < 5)
+            EnemiesNum = StartPeasant / 4 + (2*PeasantLvl) * (WaveCount * 2 + WaveCount / 2);
+            if (WaveCount < 10)
             {
-                EnemiesNum = EnemiesNum - 2*(WaveCount+1);
+                EnemiesNum = EnemiesNum / 2;
             }
-            if (EnemiesNum == 0)
+            if (WaveCount / 10 == 0)
             {
-                EnemiesNum = 1;
+                EnemiesNum = EnemiesNum*2;
             }
             WaveEnemies.text = EnemiesNum.ToString();
             RewardNum = EnemiesNum * (PeasantCost+KnightCost) + WaveCount * 2 + WaveCount / 2;
@@ -333,7 +390,7 @@ public class QuntityOfWheat : MonoBehaviour
                     }
                     if (StartMiners > 0)
                     {
-                        StartGold = StartGold + StartMiners * 2;
+                        StartGold = StartGold + StartMiners * MinerLvl * 2;
                     }
                     WaveNum.text = WaveCount.ToString();
                     IsWaveActive = false;
@@ -352,6 +409,7 @@ public class QuntityOfWheat : MonoBehaviour
                     EventText = ($"You Had Losted {WaveCount} Wave");
                     EventDisplay();
                 }
+                WavePrepareTime = 60;
                 WavePreapare = WavePrepareTime;
             }
             UpdateUI();
@@ -364,7 +422,10 @@ public class QuntityOfWheat : MonoBehaviour
 
     private void Victory()
     {
-        EventText = ("Victory");
+        EventText = ("Victory!");
         EventDisplay();
+        EventText = ("You got 100 Gold!");
+        EventDisplay();
+        StartGold += 100;
     }
 }
