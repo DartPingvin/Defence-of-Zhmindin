@@ -1,11 +1,8 @@
-using NUnit.Framework.Internal.Execution;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Windows;
 
 public class PauseMiniGame : MonoBehaviour
 {
@@ -21,13 +18,7 @@ public class PauseMiniGame : MonoBehaviour
     public void Create()
     {
         string ING2 = ING1.text;
-        Debug.Log(ING1.text);
-        Debug.Log(ING2);
         string[] Ingredients = ING2.Split(' ');
-        Debug.Log(Ingredients[0]);
-        Debug.Log(Ingredients[1]);
-        Debug.Log(Ingredients[2]);
-        Debug.Log(Ingredients[3]);
         TestIngredients[0] = Ingredients[0];
         TestIngredients[1] = Ingredients[1];
         TestIngredients[2] = Ingredients[2];
